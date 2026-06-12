@@ -1,14 +1,21 @@
 #' Run a PhyloAnnotator YAML workflow
 #'
+#' Main entry point for the PhyloAnnotator pipeline. Reads a YAML configuration file,
+#' processes metadata and tree files, and generates iTOL annotation datasets with
+#' validation reports and preview images.
+#'
 #' @param config Path to a YAML configuration file.
 #' @param output_dir Directory for exported datasets and reports.
-#' @return A list describing generated files.
+#' @return A list describing generated files:
+#'   - datasets: paths to iTOL annotation files
+#'   - validation: validation results object
+#'   - previews: paths to preview images
 #' @export
-atlas_run <- function(config, output_dir = "phyloatlas-output") {
+phylo_run <- function(config, output_dir = "phylo_annotate-output") {
   cfg <- yaml::read_yaml(config)
   cfg_dir <- dirname(normalizePath(config, mustWork = TRUE))
-  tree <- resolve_path(cfg$tree, cfg_dir)
-  metadata_path <- resolve_path(cfg$metadata, cfg_dir)
+  tree <- resolve_path(cfg$tree, cfg_dir, must_work = TRUE)
+  metadata_path <- resolve_path(cfg$metadata, cfg_dir, must_work = TRUE)
   id_col <- cfg$id_col %||% "Sample_ID"
   output_dir <- resolve_path(output_dir, getwd(), must_work = FALSE)
 
@@ -20,7 +27,9 @@ atlas_run <- function(config, output_dir = "phyloatlas-output") {
   }
 
   dataset_dir <- file.path(output_dir, "itol")
+  dir.create(dataset_dir, recursive = TRUE, showWarnings = FALSE)
   files <- character()
+  
   for (i in seq_along(annotations)) {
     ann <- annotations[[i]]
     dataset <- build_annotation(metadata, ann, id_col)
@@ -39,7 +48,7 @@ atlas_run <- function(config, output_dir = "phyloatlas-output") {
   preview <- atlas_preview(metadata, annotations, id_col = id_col, output_dir = file.path(output_dir, "previews"))
 
   cli::cli_alert_success("Generated {length(files)} iTOL dataset{?s} in {.path {dataset_dir}}")
-  list(datasets = files, validation = validation, previews = preview)
+  invisible(list(datasets = files, validation = validation, previews = preview))
 }
 
 build_annotation <- function(metadata, ann, id_col) {
@@ -139,18 +148,62 @@ write_color_tables <- function(metadata, annotations, id_col, output_dir) {
   }
 }
 
-resolve_path <- function(path, base, must_work = TRUE) {
-  if (is.null(path)) {
-    cli::cli_abort("A required path is missing from the configuration.")
+#' Simplified wrapper for phylo_run
+#'
+#' Convenience function that wraps phylo_run() with simpler parameters.
+#' Processes tree file directly instead of through YAML configuration.
+#'
+#' @param tree Path to Newick format tree file.
+#' @param metadata Path to metadata file (CSV, TSV, XLSX, ODS).
+#' @param output_dir Output directory for results.
+#' @param id_col Sample identifier column name.
+#' @param annotations List of annotation specifications.
+#'
+#' @return A list with datasets, validation, and previews paths.
+#' @export
+phylo_annotate <- function(tree, metadata, output_dir = "phylo_annotate-output", 
+                            id_col = "Sample_ID", annotations = NULL) {
+  if (is.null(annotations)) {
+    cli::cli_abort("At least one annotation must be specified.")
   }
-  candidate <- if (grepl("^([A-Za-z]:|/|\\\\)", path)) path else file.path(base, path)
-  normalizePath(candidate, mustWork = must_work)
-}
-
-sanitize_file <- function(x) {
-  gsub("[^A-Za-z0-9_.-]+", "_", x)
-}
-
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
+  
+  # Create temporary YAML config
+  config_lines <- c(
+    sprintf('tree: "%s"', tree),
+    sprintf('metadata: "%s"', metadata),
+    sprintf('id_col: "%s"', id_col),
+    "annotations:"
+  )
+  
+  for (i in seq_along(annotations)) {
+    ann <- annotations[[i]]
+    type <- ann$type %||% ""
+    if (type == "") cli::cli_abort("Each annotation must have a type field.")
+    
+    config_lines <- c(config_lines, sprintf('  - type: %s', type))
+    if (!is.null(ann$column)) {
+      config_lines <- c(config_lines, sprintf('    column: %s', ann$column))
+    }
+    if (!is.null(ann$columns)) {
+      config_lines <- c(config_lines, '    columns:')
+      for (col in ann$columns) {
+        config_lines <- c(config_lines, sprintf('      - %s', col))
+      }
+    }
+    if (!is.null(ann$label)) {
+      config_lines <- c(config_lines, sprintf('    label: "%s"', ann$label))
+    }
+  }
+  
+  # Write config to temp file
+  config_file <- tempfile(fileext = ".yaml")
+  writeLines(config_lines, config_file)
+  
+  # Run pipeline
+  result <- phylo_run(config_file, output_dir)
+  
+  # Clean up
+  unlink(config_file)
+  
+  result
 }
