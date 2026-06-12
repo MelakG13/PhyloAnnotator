@@ -1,0 +1,16 @@
+url: https://phyloannotator.github.io/PhyloAnnotator/
+template:
+  bootstrap: 5
+reference:
+  - title: Workflows
+    contents:
+      - atlas_run
+      - atlas_preview
+  - title: Metadata
+    contents:
+      - atlas_read_metadata
+      - atlas_detect_types
+      - atlas_validate
+  - title: iTOL exporters
+    contents:
+      - starts_with("itol_")

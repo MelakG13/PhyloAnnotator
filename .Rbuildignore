@@ -1,0 +1,5 @@
+^\.github$
+^README\.Rmd$
+^pkgdown$
+^\.lintr$
+^\.gitignore$

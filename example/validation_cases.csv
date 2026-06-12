@@ -1,0 +1,5 @@
+﻿Sample_ID,Country,Collection_Date,Host,Species,MLST,AMR_Gene_A,AMR_Gene_B,AMR_Gene_C
+ISO_001,Kenya,2024-01-01,Human,Escherichia coli,ST1,1,0,1
+ISO_001,Uganda,2024-01-02,Cattle,Klebsiella pneumoniae,ST2,0,1,0
+,Tanzania,2024-01-03,Poultry,Salmonella enterica,ST3,1,1,1
+ISO_999,,not-a-date,Human,Escherichia coli,mixed,yes,no,maybe

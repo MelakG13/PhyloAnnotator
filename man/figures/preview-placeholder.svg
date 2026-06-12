@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="480" viewBox="0 0 960 480" role="img" aria-label="PhyloAnnotator preview placeholder">
+  <rect width="960" height="480" fill="#f7f7f4"/>
+  <rect x="80" y="80" width="800" height="320" rx="8" fill="#ffffff" stroke="#c9c9c2"/>
+  <text x="120" y="140" font-family="Arial, sans-serif" font-size="28" fill="#27313a">PhyloAnnotator preview image</text>
+  <text x="120" y="180" font-family="Arial, sans-serif" font-size="18" fill="#59636b">Generated previews are written to atlas-output/previews/.</text>
+  <g transform="translate(120 230)">
+    <rect width="120" height="32" fill="#440154"/>
+    <rect x="130" width="120" height="32" fill="#31688e"/>
+    <rect x="260" width="120" height="32" fill="#35b779"/>
+    <rect x="390" width="120" height="32" fill="#fde725"/>
+  </g>
+</svg>

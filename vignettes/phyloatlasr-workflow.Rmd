@@ -1,0 +1,38 @@
+---
+title: "PhyloAnnotator Workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PhyloAnnotator Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Overview
+
+PhyloAnnotator workflows start with a Newick tree, a metadata table, and a YAML
+file describing annotation tracks.
+
+```{r, eval = FALSE}
+library(PhyloAnnotator)
+atlas_generate_examples("example")
+atlas_run("example/config.yaml", output_dir = "atlas-output")
+```
+
+## Validation
+
+```{r, eval = FALSE}
+metadata <- atlas_read_metadata("example/metadata.csv")
+validation <- atlas_validate(metadata, "example/tree.nwk")
+validation
+```
+
+## Export
+
+```{r, eval = FALSE}
+dataset <- itol_colorstrip(metadata, "Country")
+itol_write(dataset, "country-colorstrip.txt")
+```

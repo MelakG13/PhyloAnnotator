@@ -1,0 +1,13 @@
+﻿tree: tree.nwk
+metadata: metadata.csv
+id_col: Sample_ID
+annotations:
+  - type: colorstrip
+    column: Country
+  - type: heatmap
+    columns:
+      - AMR_Gene_A
+      - AMR_Gene_B
+      - AMR_Gene_C
+  - type: gradient
+    column: MIC

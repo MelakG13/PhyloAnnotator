@@ -1,0 +1,41 @@
+Package: PhyloAnnotator
+Title: Build iTOL Annotations and Phylogenetic Metadata Atlases
+Version: 0.1.0
+Authors@R: c(
+    person("PhyloAnnotator contributors", email = "maintainers@example.org", role = c("aut", "cre"))
+  )
+Description: A modern framework for transforming biological metadata into
+    publication-ready iTOL annotation datasets, local previews, validation
+    reports, and reproducible phylogenetic visualization workflows.
+License: MIT + file LICENSE
+URL: https://github.com/phyloannotator/PhyloAnnotator
+BugReports: https://github.com/phyloannotator/PhyloAnnotator/issues
+Depends:
+    R (>= 4.3)
+Imports:
+    ape,
+    cli,
+    data.table,
+    dplyr,
+    ggplot2,
+    httr2,
+    jsonlite,
+    readr,
+    scales,
+    stats,
+    utils,
+    viridis,
+    yaml
+Suggests:
+    covr,
+    ggtree,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    treeio
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr
